@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SaNi.Spriter.Data
 {
-    public struct FileReference : IEquatable<FileReference>
+    public struct FileReference
     {
         #region Vars
         public int Folder;
