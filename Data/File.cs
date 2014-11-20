@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace SaNi.Spriter.Data
 {
-    public struct File
+    public class File
     {
         public readonly int ID;
         public readonly string Name;

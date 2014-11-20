@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SaNi.Spriter.Data
 {
-    public struct Folder
+    public class Folder
     {
         public readonly File[] Files;
         public readonly int ID;

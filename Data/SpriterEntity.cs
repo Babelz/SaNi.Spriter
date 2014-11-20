@@ -46,6 +46,26 @@ namespace SaNi.Spriter.Data
         }
 
         #endregion
+
+        #region Methods
+
+        internal void AddInfo(ObjectInfo info)
+        {
+            objectInfos[objInfoPointer++] = info;
+        }
+
+        internal void AddCharacterMap(CharacterMap map)
+        {
+            characterMaps[charMapPointer++] = map;
+        }
+
+        internal void AddAnimation(SpriterAnimation anim)
+        {
+            animations[animationPointer++] = anim;
+            namedAnimations[anim.Name] = anim;
+        }
+
+        #endregion
     }
 
     public enum ObjectType
@@ -73,8 +93,11 @@ namespace SaNi.Spriter.Data
         }
     }
 
-    public class CharacterMap : Dictionary<FileReference, FileReference>
+    public class CharacterMap
     {
+
+        private readonly Dictionary<FileReference, FileReference> maps;
+
         public int ID
         {
             get;
@@ -91,8 +114,15 @@ namespace SaNi.Spriter.Data
         {
             ID = id;
             Name = name;
+            maps = new Dictionary<FileReference, FileReference>();
         }
 
+        public void Add(FileReference key, FileReference value)
+        {
+            maps[key] = value;
+        }
+
+        /*
         public FileReference this[FileReference index]
         {
             get
@@ -102,6 +132,6 @@ namespace SaNi.Spriter.Data
                     return key;
                 return index;
             }
-        }
+        }*/
     }
 }

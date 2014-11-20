@@ -7,5 +7,6 @@ namespace SaNi.Spriter.Data
 {
     class SpriterAnimation
     {
+        public string Name { get; private set; }
     }
 }

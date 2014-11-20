@@ -69,6 +69,7 @@ namespace SaNi.Spriter
         {
             for (int i = 0; i < entityCount; i++)
             {
+                // i on id
                 string name = input.ReadString();
                 int objInfoCount = input.ReadInt32();
                 int charMapCount = input.ReadInt32();
@@ -76,8 +77,62 @@ namespace SaNi.Spriter
                 SpriterEntity entity = new SpriterEntity(i, name, objInfoCount, charMapCount, animationCount);
                 data.AddEntity(entity);
                 // TODO lataa object infot, charmapit ja animaatiot
+                LoadObjectInfos(input, entity, objInfoCount);
+                LoadCharacterMaps(input, entity, charMapCount);
             }
         }
+
+        #region Object infos
+
+        private void LoadObjectInfos(ContentReader input, SpriterEntity entity, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                string name = input.ReadString();
+                string type = input.ReadString();
+                int w = input.ReadInt32();
+                int h = input.ReadInt32();
+                ObjectInfo info = new ObjectInfo(name, SpriterUtils.GetObjectInfoFor(type), new Vector2(w, h), new List<FileReference>());
+                entity.AddInfo(info);
+                // todo frameja? ei näy dokkarissa
+            }
+        }
+
+        #endregion
+
+        #region Character maps
+
+        private void LoadCharacterMaps(ContentReader input, SpriterEntity entity, int charMapCount)
+        {
+            for (int i = 0; i < charMapCount; i++)
+            {
+                // i on id
+                string name = input.ReadString();
+                CharacterMap map = new CharacterMap(i, name);
+
+
+                int mapCount = input.ReadInt32();
+                LoadMaps(input, map, mapCount);
+
+
+                entity.AddCharacterMap(map);
+            }
+        }
+
+        private void LoadMaps(ContentReader input, CharacterMap map, int count)
+        {
+            for (int j = 0; j < count; j++)
+            {
+                int folder = input.ReadInt32();
+                int file = input.ReadInt32();
+                int targetFolder = input.ReadInt32();
+                int targetFile = input.ReadInt32();
+                map.Add(new FileReference(folder, file), new FileReference(targetFolder, targetFile));
+            }
+        }
+
+
+        #endregion
 
         #endregion
 
