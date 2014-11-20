@@ -184,8 +184,34 @@ namespace SaNi.Spriter
 
                 Key key = new Key(id, time, curve, boneRefCount, objectRefCount);
                 mainline.AddKey(key);
+                LoadRefs(input, objectRefCount, boneRefCount, key);
             }
 
+        }
+
+        private void LoadRefs(ContentReader input, int objectRefCount, int boneRefCount, Key _key)
+        {
+            for (int id = 0; id < boneRefCount; id++)
+            {
+                int parent = input.ReadInt32();
+                int timeline = input.ReadInt32();
+                int key = input.ReadInt32();
+                
+                BoneRef boneRef = new BoneRef(id, timeline, key, _key.GetBoneRef(parent));
+                _key.AddBoneRef(boneRef);
+            }
+
+            for (int id = 0; id < objectRefCount; id++)
+            {
+                int parent = input.ReadInt32();
+                int timeline = input.ReadInt32();
+                int key = input.ReadInt32();
+                int z = input.ReadInt32();
+                ObjectRef objref = new ObjectRef(id, timeline, key, _key.GetBoneRef(parent), z);
+                _key.AddObjectRef(objref);
+            }
+
+            // TODO sort?
         }
 
         #endregion
