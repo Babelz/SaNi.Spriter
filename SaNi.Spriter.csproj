@@ -45,6 +45,7 @@
     <Compile Include="Data\File.cs" />
     <Compile Include="Data\FileReference.cs" />
     <Compile Include="Data\Folder.cs" />
+    <Compile Include="Data\Interpolator.cs" />
     <Compile Include="Data\Mainline.cs" />
     <Compile Include="Data\SpriterAnimation.cs" />
     <Compile Include="Data\SpriterData.cs" />

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using SaNi.Spriter.Data;
+using Curve = SaNi.Spriter.Data.Curve;
 
 namespace SaNi.Spriter
 {
@@ -156,7 +157,35 @@ namespace SaNi.Spriter
                     looping,
                     timelineCount
                     );
+                entity.AddAnimation(anim);
+                
+                LoadMainlineKeys(input, anim.Mainline, mainlineKeysCount);
             }
+        }
+
+        private void LoadMainlineKeys(ContentReader input, Mainline mainline, int count)
+        {
+            for (int id = 0; id < count; id++)
+            {
+                int time = input.ReadInt32();
+                int objectRefCount = input.ReadInt32();
+                int boneRefCount = input.ReadInt32();
+                string curveType = input.ReadString();
+                float[] cs = new[]
+                {
+                    input.ReadSingle(),
+                    input.ReadSingle(),
+                    input.ReadSingle(),
+                    input.ReadSingle(),
+                };
+                Curve curve = new Curve();
+                curve.Type = Curve.GetType(curveType);
+                curve.Constraints.Set(cs[0], cs[1], cs[2], cs[3]);
+
+                Key key = new Key(id, time, curve, boneRefCount, objectRefCount);
+                mainline.AddKey(key);
+            }
+
         }
 
         #endregion
