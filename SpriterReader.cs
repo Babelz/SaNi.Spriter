@@ -79,6 +79,7 @@ namespace SaNi.Spriter
                 // TODO lataa object infot, charmapit ja animaatiot
                 LoadObjectInfos(input, entity, objInfoCount);
                 LoadCharacterMaps(input, entity, charMapCount);
+                LoadAnimations(input, entity, animationCount);
             }
         }
 
@@ -131,6 +132,32 @@ namespace SaNi.Spriter
             }
         }
 
+
+        #endregion
+
+        #region Animations
+
+        private void LoadAnimations(ContentReader input, SpriterEntity entity, int animationCount)
+        {
+            for (int i = 0; i < animationCount; i++)
+            {
+                // i on id
+                string name = input.ReadString();
+                int length = input.ReadInt32();
+                bool looping = input.ReadBoolean();
+
+                int mainlineKeysCount = input.ReadInt32();
+                int timelineCount = input.ReadInt32();
+                SpriterAnimation anim = new SpriterAnimation(
+                    new Mainline(mainlineKeysCount),
+                    i,
+                    name,
+                    length,
+                    looping,
+                    timelineCount
+                    );
+            }
+        }
 
         #endregion
 

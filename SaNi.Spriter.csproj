@@ -41,12 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Curve.cs" />
     <Compile Include="Data\File.cs" />
     <Compile Include="Data\FileReference.cs" />
     <Compile Include="Data\Folder.cs" />
+    <Compile Include="Data\Mainline.cs" />
     <Compile Include="Data\SpriterAnimation.cs" />
     <Compile Include="Data\SpriterData.cs" />
     <Compile Include="Data\SpriterEntity.cs" />
+    <Compile Include="Data\Timeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpriterReader.cs" />
     <Compile Include="SpriterUtils.cs" />
