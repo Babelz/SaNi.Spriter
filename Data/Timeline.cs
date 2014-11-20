@@ -8,7 +8,7 @@ namespace SaNi.Spriter.Data
 {
     public class Timeline
     {
-        public readonly Key[] Keys;
+        public readonly TimelineKey[] Keys;
         private int keyPointer;
         public readonly int ID;
         public readonly string Name;
@@ -19,17 +19,17 @@ namespace SaNi.Spriter.Data
             ID = id;
             Name = name;
             ObjectInfo = info;
-            Keys = new Key[keys];
+            Keys = new TimelineKey[keys];
         }
 
-        internal void AddKey(Key key)
+        internal void AddKey(TimelineKey key)
         {
             Keys[keyPointer++] = key;
         }
 
         #region Indexer
 
-        public Key this[int index]
+        public TimelineKey this[int index]
         {
             get { return Keys[index]; }
         }
@@ -54,7 +54,7 @@ namespace SaNi.Spriter.Data
         public SpriterObject Object
         {
             get { return obj;  }
-            private set
+            set
             {
                 if (value == null) throw new ArgumentException("obj cannot be null", "value");
                     obj = value;

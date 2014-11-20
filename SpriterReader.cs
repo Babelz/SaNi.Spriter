@@ -160,7 +160,81 @@ namespace SaNi.Spriter
                 entity.AddAnimation(anim);
                 
                 LoadMainlineKeys(input, anim.Mainline, mainlineKeysCount);
+                LoadTimelines(input, anim, entity, timelineCount);
             }
+        }
+
+        private void LoadTimelines(ContentReader input, SpriterAnimation anim, SpriterEntity entity, int count)
+        {
+            for (int id = 0; id < count; id++)
+            {
+                string name = input.ReadString();
+                string objtype = input.ReadString();
+                int keyCount = input.ReadInt32();
+                ObjectType type = SpriterUtils.GetObjectInfoFor(objtype);
+                ObjectInfo info = entity.GetInfo(name);
+                if (info == null) info = new ObjectInfo(name, type, Vector2.Zero, new List<FileReference>());
+                Timeline timeline = new Timeline(id, name, info, keyCount);
+                anim.AddTimeline(timeline);
+                LoadTimelineKeys(input, timeline, keyCount);
+            }
+        }
+
+        private void LoadTimelineKeys(ContentReader input, Timeline timeline, int count)
+        {
+            for (int id = 0; id < count; id++)
+            {
+                int spin = input.ReadInt32();
+                int time = input.ReadInt32();
+                string curveType = input.ReadString();
+                float[] c = new[]
+                {
+                    input.ReadSingle(),
+                    input.ReadSingle(),
+                    input.ReadSingle(),
+                    input.ReadSingle()
+                };
+                Curve curve = new Curve();
+                curve.Type = Curve.GetType(curveType);
+                curve.Constraints.Set(c[0],c[1], c[2], c[3]);
+                TimelineKey key = new TimelineKey(id, time, spin, curve);
+                LoadObjectOrBone(input, key, timeline);
+            }
+        }
+
+        private void LoadObjectOrBone(ContentReader input, TimelineKey key, Timeline timeline)
+        {
+            string name = input.ReadString();
+            Vector2 pivot = new Vector2(input.ReadSingle(), input.ReadSingle());
+            Vector2 scale = new Vector2(input.ReadSingle(), input.ReadSingle());
+            Vector2 position = new Vector2(input.ReadSingle(), input.ReadSingle());
+            float angle = input.ReadSingle();
+            int folder = -1, file = -1;
+            float alpha = 1f;
+            if (name == "object")
+            {
+                if (timeline.ObjectInfo.Type == ObjectType.Sprite)
+                {
+                    folder = input.ReadInt32();
+                    file = input.ReadInt32();
+                    alpha = input.ReadSingle();
+                    // TODO laske pivot
+
+
+                    
+                }
+            }
+            SpriterObject obj;
+            if (name == "bone")
+            {
+                obj = new SpriterObject(position, scale, pivot, angle, alpha, new FileReference(folder, file));
+            }
+            else
+            {
+                obj = new SpriterObject(position, scale, pivot, angle, alpha, new FileReference(folder, file));
+            }
+            key.Object = obj;
+            timeline.AddKey(key);
         }
 
         private void LoadMainlineKeys(ContentReader input, Mainline mainline, int count)

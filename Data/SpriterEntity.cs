@@ -66,6 +66,11 @@ namespace SaNi.Spriter.Data
         }
 
         #endregion
+
+        public ObjectInfo GetInfo(string name)
+        {
+            return objectInfos.FirstOrDefault(o => o.Name == name);
+        }
     }
 
     public enum ObjectType
@@ -77,7 +82,7 @@ namespace SaNi.Spriter.Data
         Skin
     }
 
-    public struct ObjectInfo
+    public class ObjectInfo
     {
         public readonly ObjectType Type;
         public readonly List<FileReference> Frames;
