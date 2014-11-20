@@ -22,14 +22,27 @@ namespace SaNi.Spriter.Data
             private set;
         }
 
+        private readonly Dictionary<string, SpriterAnimation> namedAnimations;
+        private readonly SpriterAnimation[] animations;
+        private readonly CharacterMap[] characterMaps;
+        private readonly ObjectInfo[] objectInfos;
+
+        private int objInfoPointer;
+        private int charMapPointer;
+        private int animationPointer;
+            
         #endregion
 
         #region Ctor
 
-        public SpriterEntity(int id, string name)
+        public SpriterEntity(int id, string name, int objInfoCount, int charMapCount, int animationCount)
         {
             ID = id;
             Name = name;
+            objectInfos = new ObjectInfo[objInfoCount];
+            characterMaps = new CharacterMap[charMapCount];
+            namedAnimations = new Dictionary<string, SpriterAnimation>();
+            animations = new SpriterAnimation[animationCount];
         }
 
         #endregion

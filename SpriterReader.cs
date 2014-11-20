@@ -27,10 +27,12 @@ namespace SaNi.Spriter
                 files[i] = input.ReadInt32();
             }*/
             LoadFolders(input, data, folderCount);
-
+            LoadEntities(input, data, entityCount);
 
             return data;
         }
+
+        #region Folders and files
 
         private void LoadFolders(ContentReader input, SpriterData data, int folderCount)
         {
@@ -57,6 +59,27 @@ namespace SaNi.Spriter
                 folder.AddFile(new File(file, name, new Vector2(w, h), new Vector2(pivotX, pivotY)));
             }
         }
+
+        #endregion
+
+
+        #region Entities
+
+        private void LoadEntities(ContentReader input, SpriterData data, int entityCount)
+        {
+            for (int i = 0; i < entityCount; i++)
+            {
+                string name = input.ReadString();
+                int objInfoCount = input.ReadInt32();
+                int charMapCount = input.ReadInt32();
+                int animationCount = input.ReadInt32();
+                SpriterEntity entity = new SpriterEntity(i, name, objInfoCount, charMapCount, animationCount);
+                data.AddEntity(entity);
+                // TODO lataa object infot, charmapit ja animaatiot
+            }
+        }
+
+        #endregion
 
     }
 }
