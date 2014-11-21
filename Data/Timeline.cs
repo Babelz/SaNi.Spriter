@@ -47,8 +47,7 @@ namespace SaNi.Spriter.Data
 
         public bool Active
         {
-            get;
-            private set;
+            get; internal set;
         }
 
         public SpriterObject Object
@@ -83,30 +82,15 @@ namespace SaNi.Spriter.Data
 
     public class Bone
     {
-
-        protected Vector2 position;
-        protected Vector2 scale;
-        protected Vector2 pivot;
+        // pitää olla ref
+        
+        public Vector2 Scale;
+        public Vector2 Pivot;
 
         public float Angle;
 
-        public Vector2 Position
-        {
-            get { return position; }
-            private set { position = value; }
-        }
-
-        public Vector2 Scale
-        {
-            get { return scale; }
-            private set { scale = value; }
-        }
-
-        public Vector2 Pivot
-        {
-            get { return pivot; }
-            private set { pivot = value; }
-        }
+        public Vector2 Position;
+        
 
         public Bone(Vector2 position, Vector2 scale, Vector2 pivot, float angle)
         {
@@ -138,18 +122,18 @@ namespace SaNi.Spriter.Data
 
         public void Set(Bone bone)
         {
-            Set(bone.position, bone.Angle, bone.scale, bone.pivot);   
+            Set(bone.Position, bone.Angle, bone.Scale, bone.Pivot);   
         }
 
         public virtual void Set(float x, float y, float angle, float scaleX, float scaleY, float pivotX, float pivotY)
         {
             Angle = angle;
-            position.X = x;
-            position.Y = y;
-            scale.X = scaleX;
-            scale.Y = scaleY;
-            pivot.X = pivotX;
-            pivot.Y = pivotY;
+            Position.X = x;
+            Position.Y = y;
+            Scale.X = scaleX;
+            Scale.Y = scaleY;
+            Pivot.X = pivotX;
+            Pivot.Y = pivotY;
         }
 
         public virtual void Set(Vector2 pos, float angle, Vector2 scale, Vector2 pivot)
@@ -162,22 +146,22 @@ namespace SaNi.Spriter.Data
 
         public void Unmap(Bone parent)
         {
-            Angle *= Math.Sign(parent.scale.X)*Math.Sign(parent.scale.Y);
+            Angle *= Math.Sign(parent.Scale.X)*Math.Sign(parent.Scale.Y);
             Angle += parent.Angle;
-            Scale *= parent.scale;
-            Position *= parent.position;
+            Scale *= parent.Scale;
+            Position *= parent.Position;
             Position.Rotate(parent.Angle);
-            Position += parent.position;
+            Position += parent.Position;
         }
 
         public void Map(Bone parent)
         {
-            Position -= parent.position;
+            Position -= parent.Position;
             Position.Rotate(-parent.Angle);
-            Position *= Vector2.One/parent.position;
-            Scale *= Vector2.One/parent.scale;
+            Position *= Vector2.One/parent.Position;
+            Scale *= Vector2.One/parent.Scale;
             Angle -= parent.Angle;
-            Angle *= Math.Sign(parent.scale.X)*Math.Sign(parent.scale.Y);
+            Angle *= Math.Sign(parent.Scale.X)*Math.Sign(parent.Scale.Y);
         }
     }
 
@@ -223,7 +207,7 @@ namespace SaNi.Spriter.Data
 
         public void Set(SpriterObject o)
         {
-            Set(o.position, o.Angle, o.scale, o.pivot, o.Alpha, o.Ref);
+            Set(o.Position, o.Angle, o.Scale, o.Pivot, o.Alpha, o.Ref);
         }
     }
 }

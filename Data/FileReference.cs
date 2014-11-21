@@ -36,7 +36,7 @@ namespace SaNi.Spriter.Data
             File = file;
         }
 
-        public void Set(ref FileReference fileRef)
+        public void Set(FileReference fileRef)
         {
             Set(fileRef.Folder, fileRef.File);
         }
