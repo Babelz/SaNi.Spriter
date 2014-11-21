@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace SaNi.Spriter.Data
 {
@@ -197,10 +198,14 @@ namespace SaNi.Spriter.Data
             {
                 TweenedKeys[i] = new TimelineKey(i);
                 UnmappedTweenedKeys[i] = new TimelineKey(i);
-                throw new NotImplementedException();
-                // TODO jotku objectit
-                //TweenedKeys[i].SetObject(new Time)
+                TweenedKeys[i].Object = new SpriterObject(Vector2.Zero);
+                UnmappedTweenedKeys[i].Object = new SpriterObject(Vector2.Zero);
             }
+            if (Mainline.keys.Length > 0)
+            {
+                CurrentKey = Mainline[0];
+            }
+            prepared = true;
         }
 
         #endregion
