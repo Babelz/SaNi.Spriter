@@ -176,16 +176,16 @@ namespace SaNi.Spriter.Data
             maps[key] = value;
         }
 
-        /*
+        
         public FileReference this[FileReference index]
         {
             get
             {
                 FileReference key;
-                if (TryGetValue(index, out key))
+                if (maps.TryGetValue(index, out key))
                     return key;
                 return index;
             }
-        }*/
+        }
     }
 }
