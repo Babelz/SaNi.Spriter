@@ -51,7 +51,12 @@
     <Compile Include="Data\SpriterData.cs" />
     <Compile Include="Data\SpriterEntity.cs" />
     <Compile Include="Data\Timeline.cs" />
+    <Compile Include="Loaders\AtlasLoader.cs" />
+    <Compile Include="Loaders\Texture2DLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\SpriterRenderer.cs" />
+    <Compile Include="SpriterAnimationPlayer.cs" />
+    <Compile Include="SpriterLoader.cs" />
     <Compile Include="SpriterReader.cs" />
     <Compile Include="SpriterUtils.cs" />
   </ItemGroup>

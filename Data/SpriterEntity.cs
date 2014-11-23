@@ -65,12 +65,61 @@ namespace SaNi.Spriter.Data
             namedAnimations[anim.Name] = anim;
         }
 
-        #endregion
+        public SpriterAnimation GetAnimation(int index)
+        {
+            return animations[index];
+        }
+
+        public SpriterAnimation GetAnimation(string name)
+        {
+            return namedAnimations[name];
+        }
+
+        public int Animations
+        {
+            get { return animations.Length; }
+        }
+
+        public bool ContainsAnimation(SpriterAnimation anim)
+        {
+            return animations.Contains(anim);
+        }
+
+        public SpriterAnimation GetAnimationWithMostTimelines()
+        {
+            SpriterAnimation max = GetAnimation(0);
+            foreach (var animation in animations)
+            {
+                if (max.Timelines < animation.Timelines) max = animation;
+            }
+            return max;
+        }
+
+        public CharacterMap GetCharacterMap(string name)
+        {
+            return characterMaps.FirstOrDefault(c => c.Name == name);
+        }
 
         public ObjectInfo GetInfo(string name)
         {
             return objectInfos.FirstOrDefault(o => o.Name == name);
         }
+
+        public ObjectInfo GetInfo(string name, ObjectType type)
+        {
+            ObjectInfo info = GetInfo(name);
+            if (info != null && info.Type == type) return info;
+            return null;
+        }
+
+        public ObjectInfo GetInfo(int index)
+        {
+            return objectInfos[index];
+        }
+
+        #endregion
+
+
     }
 
     public enum ObjectType

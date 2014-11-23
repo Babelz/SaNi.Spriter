@@ -7,8 +7,8 @@ namespace SaNi.Spriter.Data
 {
     public class SpriterData
     {
-        private readonly Folder[] folders;
-        private readonly SpriterEntity[] entities;
+        public readonly Folder[] Folders;
+        public readonly SpriterEntity[] Entities;
         private int folderPointer, entityPointer;
 
 
@@ -41,8 +41,8 @@ namespace SaNi.Spriter.Data
             ScmlVersion = scmlv;
             Generator = gen;
             GeneratorVersion = genv;
-            this.folders = new Folder[folders];
-            this.entities = new SpriterEntity[entities];
+            this.Folders = new Folder[folders];
+            this.Entities = new SpriterEntity[entities];
         }
 
         #endregion
@@ -51,32 +51,32 @@ namespace SaNi.Spriter.Data
 
         public void AddFolder(Folder folder)
         {
-            folders[folderPointer++] = folder;
+            Folders[folderPointer++] = folder;
         }
 
         public void AddEntity(SpriterEntity entity)
         {
-            entities[entityPointer++] = entity;
+            Entities[entityPointer++] = entity;
         }
 
         public Folder GetFolder(string name)
         {
-            return folders.First(f => f.Name == name);
+            return Folders.First(f => f.Name == name);
         }
 
         public Folder GetFolder(int index)
         {
-            return folders[index];
+            return Folders[index];
         }
 
         public SpriterEntity GetEntity(int index)
         {
-            return entities[index];
+            return Entities[index];
         }
 
         public SpriterEntity GetEntity(string entity)
         {
-            return entities.First(e => e.Name == entity);
+            return Entities.First(e => e.Name == entity);
         }
 
         public File GetFile(ref Folder folder, int file)
@@ -86,7 +86,7 @@ namespace SaNi.Spriter.Data
 
         public File GetFile(int folder, int file)
         {
-            return folders[folder][file];
+            return Folders[folder][file];
         }
 
         public File GetFile(ref FileReference fileref)

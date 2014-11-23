@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace SaNi.Spriter.Data
 {
-    class SpriterAnimation
+    public class SpriterAnimation
     {
         public readonly Mainline Mainline;
         private readonly Timeline[] timelines;
