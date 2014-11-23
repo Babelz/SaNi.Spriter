@@ -73,6 +73,7 @@ namespace SaNi.Spriter
 
         public SpriterAnimationPlayer(SpriterEntity entity)
         {
+            Root = new Bone(Vector2.Zero);
             boneIterator = new BoneIterator(this);
             objectIterator = new ObjectIterator(this);
             Speed = 15;
