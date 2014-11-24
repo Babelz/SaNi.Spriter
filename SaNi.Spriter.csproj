@@ -55,6 +55,7 @@
     <Compile Include="Loaders\Texture2DLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\SpriterRenderer.cs" />
+    <Compile Include="Renderer\Texture2DRenderer.cs" />
     <Compile Include="SpriterAnimationPlayer.cs" />
     <Compile Include="SpriterLoader.cs" />
     <Compile Include="SpriterReader.cs" />

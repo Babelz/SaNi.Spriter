@@ -161,6 +161,7 @@ namespace SaNi.Spriter
                 
                 LoadMainlineKeys(input, anim.Mainline, mainlineKeysCount);
                 LoadTimelines(input, anim, entity, timelineCount);
+                anim.Prepare();
             }
         }
 

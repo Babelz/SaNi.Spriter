@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SaNi.Spriter.Data;
 
 namespace SaNi.Spriter.Renderer
@@ -100,17 +101,17 @@ namespace SaNi.Spriter.Renderer
             }
         }
 
-        public void Draw(SpriterAnimationPlayer player)
+        public void Draw(SpriterAnimationPlayer player, SpriteBatch sb)
         {
-            Draw(player, player.CharacterMaps);
+            Draw(player, player.CharacterMaps, sb);
         }
 
-        private void Draw(SpriterAnimationPlayer player, CharacterMap[] characterMaps)
+        private void Draw(SpriterAnimationPlayer player, CharacterMap[] characterMaps, SpriteBatch sb)
         {
-            Draw(player.ObjectIterator(), characterMaps);
+            Draw(player.ObjectIterator(), characterMaps, sb);
         }
 
-        private void Draw(ObjectIterator objectIterator, CharacterMap[] characterMaps)
+        private void Draw(ObjectIterator objectIterator, CharacterMap[] characterMaps, SpriteBatch sb)
         {
             while (objectIterator.MoveNext())
             {
@@ -127,12 +128,12 @@ namespace SaNi.Spriter.Renderer
                             }
                         }
                     }
-                    Draw(obj);
+                    Draw(obj, sb);
                 }
             }
         }
 
-        public abstract void Draw(SpriterObject obj);
+        public abstract void Draw(SpriterObject obj, SpriteBatch sb);
         public abstract void Line(float pX, float pY, float targetX, float targetY);
         public abstract void SetColor(Color color);
     }
