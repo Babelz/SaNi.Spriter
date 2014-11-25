@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using SaNi.Spriter.Data;
 
+
 namespace SaNi.Spriter
 {
     abstract public class SpriterLoader<R>
@@ -40,7 +41,7 @@ namespace SaNi.Spriter
             {
                 foreach (var file in folder.Files)
                 {
-                    FileReference f = new FileReference(folder.ID, file.ID);
+                    FileReference f = new FileReference(folder.Id, file.Id);
                     Resources[f] = LoadResource(f);
                 }
             }

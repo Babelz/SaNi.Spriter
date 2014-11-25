@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SaNi.Spriter.Data;
 
+
 namespace SaNi.Spriter.Loaders
 {
     public class Texture2DLoader : SpriterLoader<Texture2D>
@@ -18,7 +19,7 @@ namespace SaNi.Spriter.Loaders
 
         protected override Texture2D LoadResource(FileReference fileReference)
         {
-            string file = Data.GetFile(ref fileReference).Name.Replace(".png", "");
+            string file = Data.GetFile(fileReference).Name.Replace(".png", "");
 
             file = Root + file.Replace('/', Path.DirectorySeparatorChar);
 

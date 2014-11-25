@@ -41,15 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculator.cs" />
+    <Compile Include="Data\Box.cs" />
     <Compile Include="Data\Curve.cs" />
+    <Compile Include="Data\Data.cs" />
+    <Compile Include="Data\Dimension.cs" />
+    <Compile Include="Data\Entity.cs" />
     <Compile Include="Data\File.cs" />
     <Compile Include="Data\FileReference.cs" />
     <Compile Include="Data\Folder.cs" />
     <Compile Include="Data\Interpolator.cs" />
     <Compile Include="Data\Mainline.cs" />
+    <Compile Include="Data\Point.cs" />
+    <Compile Include="Data\Rectangle.cs" />
     <Compile Include="Data\SpriterAnimation.cs" />
-    <Compile Include="Data\SpriterData.cs" />
-    <Compile Include="Data\SpriterEntity.cs" />
     <Compile Include="Data\Timeline.cs" />
     <Compile Include="Loaders\AtlasLoader.cs" />
     <Compile Include="Loaders\Texture2DLoader.cs" />
@@ -57,6 +62,7 @@
     <Compile Include="Renderer\SpriterRenderer.cs" />
     <Compile Include="Renderer\Texture2DRenderer.cs" />
     <Compile Include="SpriterAnimationPlayer.cs" />
+    <Compile Include="SpriterException.cs" />
     <Compile Include="SpriterLoader.cs" />
     <Compile Include="SpriterReader.cs" />
     <Compile Include="SpriterUtils.cs" />

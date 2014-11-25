@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SaNi.Spriter.Data;
 
+
 namespace SaNi.Spriter.Renderer
 {
+    using TimelineKey = Timeline.Key;
     public abstract class SpriterRenderer<R>
     {
         protected SpriterLoader<R> Loader { get; set; }
@@ -20,19 +22,19 @@ namespace SaNi.Spriter.Renderer
         public void DrawBones(SpriterAnimationPlayer player)
         {
             SetColor(Color.Red);
-            BoneIterator it = player.BoneIterator();
+            IEnumerator<Bone> it = player.BoneIterator();
             while (it.MoveNext())
             {
                 Bone bone = it.Current;
                 TimelineKey key = player.GetKeyFor(bone);
                 if (!key.Active) continue;
-                ObjectInfo info = player.GetObjectInfoFor(bone);
-                Vector2 size = info.Size;
+                Entity.ObjectInfo info = player.GetObjectInfoFor(bone);
+                Dimension size = info.Size;
                 DrawBone(bone, size);
             }
         }
 
-        public void DrawBone(Bone bone, Vector2 size)
+        public void DrawBone(Bone bone, Dimension size)
         {
             float halfHeight = size.Y/2f;
             float xx = bone.Position.X + (float) Math.Cos(MathHelper.ToRadians(bone.Angle))*size.Y;
@@ -74,7 +76,7 @@ namespace SaNi.Spriter.Renderer
             DrawObjectBoxes(player, player.ObjectIterator());
         }
 
-        private void DrawObjectBoxes(SpriterAnimationPlayer player, ObjectIterator objectIterator)
+        private void DrawObjectBoxes(SpriterAnimationPlayer player, IEnumerator<SpriterObject> objectIterator)
         {
             while (objectIterator.MoveNext())
             {
@@ -92,7 +94,7 @@ namespace SaNi.Spriter.Renderer
             DrawBoneBoxes(player, player.BoneIterator());
         }
 
-        public void DrawBoneBoxes(SpriterAnimationPlayer player, BoneIterator boneIterator)
+        public void DrawBoneBoxes(SpriterAnimationPlayer player, IEnumerator<Bone> boneIterator)
         {
             while (boneIterator.MoveNext())
             {
@@ -106,17 +108,17 @@ namespace SaNi.Spriter.Renderer
             Draw(player, player.CharacterMaps, sb);
         }
 
-        private void Draw(SpriterAnimationPlayer player, CharacterMap[] characterMaps, SpriteBatch sb)
+        private void Draw(SpriterAnimationPlayer player, Entity.CharacterMap[] characterMaps, SpriteBatch sb)
         {
             Draw(player.ObjectIterator(), characterMaps, sb);
         }
 
-        private void Draw(ObjectIterator objectIterator, CharacterMap[] characterMaps, SpriteBatch sb)
+        private void Draw(IEnumerator<SpriterObject> objectIterator, Entity.CharacterMap[] characterMaps, SpriteBatch sb)
         {
             while (objectIterator.MoveNext())
             {
                 SpriterObject obj = objectIterator.Current;
-                if (obj.Ref.HasFile)
+                if (obj.@ref.HasFile())
                 {
                     if (characterMaps != null)
                     {
@@ -124,7 +126,7 @@ namespace SaNi.Spriter.Renderer
                         {
                             if (characterMap != null)
                             {
-                                obj.Ref.Set(characterMap[obj.Ref]);
+                                obj.@ref.Set(characterMap[obj.@ref]);
                             }
                         }
                     }

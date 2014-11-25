@@ -1,64 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SaNi.Spriter.Data
+﻿namespace SaNi.Spriter.Data
 {
-    public class FileReference
-    {
-        #region Vars
-        public int Folder;
-        public int File;
-        #endregion
 
-        #region Properties
-        public bool HasFile
-        {
-            get { return File != -1; }
-        }
+	/// <summary>
+	/// Represents a reference to a specific file.
+	/// A file reference consists of a folder and file index.
+	/// @author Trixt0r
+	/// 
+	/// </summary>
+	public class FileReference
+	{
 
-        public bool HasFolder
-        {
-            get { return Folder != -1; }
-        }
-        #endregion
+		public int Folder, File;
 
-        public FileReference(int folder, int file)
-        {
-            Folder = folder;
-            File = file;
-        }
+		public FileReference(int folder, int file)
+		{
+			this.Set(folder, file);
+		}
 
-        public void Set(int folder, int file)
-        {
-            Folder = folder;
-            File = file;
-        }
+		public override int GetHashCode()
+		{
+			return Folder * 10000 + File; //We can have 10000 files per folder
+		}
 
-        public void Set(FileReference fileRef)
-        {
-            Set(fileRef.Folder, fileRef.File);
-        }
+		public override bool Equals(object @ref)
+		{
+			if (@ref is FileReference)
+			{
+				return this.File == ((FileReference)@ref).File && this.Folder == ((FileReference)@ref).Folder;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        public override string ToString()
-        {
-            return string.Format("[folder: {0}, file: {1}]", Folder, File);
-        }
+		public virtual void Set(int folder, int file)
+		{
+			this.Folder = folder;
+			this.File = file;
+		}
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-            FileReference fileRef = (FileReference) obj;
-            return Folder == fileRef.Folder && File == fileRef.File;
-        }
+		public virtual void Set(FileReference @ref)
+		{
+			this.Set(@ref.Folder, @ref.File);
+		}
 
-        public override int GetHashCode()
-        {
-            return Folder*10000 + File;
-        }
-    }
+		public virtual bool HasFile()
+		{
+			return this.File != -1;
+		}
+
+		public virtual bool HasFolder()
+		{
+			return this.Folder != -1;
+		}
+
+		public override string ToString()
+		{
+			return "[folder: " + Folder + ", file: " + File + "]";
+		}
+
+	}
+
 }

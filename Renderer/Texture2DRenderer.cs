@@ -5,48 +5,48 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SaNi.Spriter.Data;
+using Point = SaNi.Spriter.Data.Point;
 
 namespace SaNi.Spriter.Renderer
 {
-    /*
+
     public class Texture2DRenderer : SpriterRenderer<Texture2D>
     {
-        private readonly SpriteBatch sb;
 
-        public Texture2DRenderer(SpriterLoader<Texture2D> loader, SpriteBatch sb) : base(loader)
+        public Texture2DRenderer(SpriterLoader<Texture2D> loader) : base(loader)
         {
-            this.sb = sb;
         }
 
-        public override void Draw(SpriterObject obj)
+        public override void Draw(SpriterObject obj, SpriteBatch sb)
         {
-            Texture2D texture = Loader[obj.Ref];
+            Texture2D texture = Loader[obj.@ref];
             float newPivotX = texture.Width*obj.Pivot.X;
-            float newPivotY = texture.Height*obj.Pivot.Y;
-            sb.Begin();
+            float newPivotY = texture.Height*(1f - obj.Pivot.Y);
+            Point x = obj.Position;
+            Vector2 origin = new Vector2(newPivotX, newPivotY);
+
             sb.Draw(
                 texture,
-                new Vector2(100f, 100f),
+                new Vector2(400f) + new Vector2(x.X, -x.Y) - origin,
                 null,
                 null,
-                new Vector2(newPivotX, newPivotY),
-                obj.Angle,
-                obj.Scale,
-                Color.White * obj.Alpha,
+                origin,
+                MathHelper.ToRadians(360f - obj.Angle),
+                new Vector2(obj.Scale.X, obj.Scale.Y),
+                Color.White*obj.Alpha,
                 SpriteEffects.None,
                 0f
                 );
-            sb.End();
         }
 
         public override void Line(float pX, float pY, float targetX, float targetY)
         {
-            
+
         }
 
         public override void SetColor(Color color)
         {
-            
+
         }
-    }*/
+    }
 }

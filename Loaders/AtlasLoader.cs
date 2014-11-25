@@ -21,7 +21,7 @@ namespace SaNi.Spriter.Loaders
 
         protected override void BeginLoading()
         {
-            string[] contents = File.ReadAllLines(Path.Combine(Root, atlasFile + ".atlas"));
+            string[] contents = System.IO.File.ReadAllLines(Path.Combine(Root, atlasFile + ".atlas"));
 
             string filename = contents[1];
             string format = contents[2];

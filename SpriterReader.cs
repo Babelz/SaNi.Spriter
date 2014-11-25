@@ -6,11 +6,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using SaNi.Spriter.Data;
 using Curve = SaNi.Spriter.Data.Curve;
+using Point = SaNi.Spriter.Data.Point;
 
 namespace SaNi.Spriter
 {
+    using TimelineKey = Timeline.Key;
     public class SpriterReader : ContentTypeReader<SpriterData>
     {
+        private SpriterData data;
         protected override SpriterData Read(ContentReader input, SpriterData data)
         {
             
@@ -19,7 +22,8 @@ namespace SaNi.Spriter
             string generatorVersion = input.ReadString();
             int folderCount = input.ReadInt32();
             int entityCount = input.ReadInt32();
-            data = new SpriterData(scmlversion, generator, generatorVersion, folderCount, entityCount);
+            this.data = new SpriterData(scmlversion, generator, generatorVersion, folderCount, entityCount);
+            data = this.data;
             /*int[] files = new int[folderCount];
 
             for (int i = 0; i < folderCount; i++)
@@ -57,7 +61,7 @@ namespace SaNi.Spriter
                 int h = input.ReadInt32();
                 float pivotX = input.ReadSingle();
                 float pivotY = input.ReadSingle();
-                folder.AddFile(new File(file, name, new Vector2(w, h), new Vector2(pivotX, pivotY)));
+                folder.AddFile(new File(file, name, new Dimension(w, h), new Point(pivotX, pivotY)));
             }
         }
 
@@ -75,7 +79,7 @@ namespace SaNi.Spriter
                 int objInfoCount = input.ReadInt32();
                 int charMapCount = input.ReadInt32();
                 int animationCount = input.ReadInt32();
-                SpriterEntity entity = new SpriterEntity(i, name, objInfoCount, charMapCount, animationCount);
+                Entity entity = new Entity(i, name, animationCount, charMapCount, objInfoCount);
                 data.AddEntity(entity);
                 // TODO lataa object infot, charmapit ja animaatiot
                 LoadObjectInfos(input, entity, objInfoCount);
@@ -86,7 +90,7 @@ namespace SaNi.Spriter
 
         #region Object infos
 
-        private void LoadObjectInfos(ContentReader input, SpriterEntity entity, int count)
+        private void LoadObjectInfos(ContentReader input, Entity entity, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -94,7 +98,7 @@ namespace SaNi.Spriter
                 string type = input.ReadString();
                 int w = input.ReadInt32();
                 int h = input.ReadInt32();
-                ObjectInfo info = new ObjectInfo(name, SpriterUtils.GetObjectInfoFor(type), new Vector2(w, h), new List<FileReference>());
+                Entity.ObjectInfo info = new Entity.ObjectInfo(name, SpriterUtils.GetObjectInfoFor(type), new Dimension(w, h), new List<FileReference>());
                 entity.AddInfo(info);
                 // todo frameja? ei näy dokkarissa
             }
@@ -104,13 +108,13 @@ namespace SaNi.Spriter
 
         #region Character maps
 
-        private void LoadCharacterMaps(ContentReader input, SpriterEntity entity, int charMapCount)
+        private void LoadCharacterMaps(ContentReader input, Entity entity, int charMapCount)
         {
             for (int i = 0; i < charMapCount; i++)
             {
                 // i on id
                 string name = input.ReadString();
-                CharacterMap map = new CharacterMap(i, name);
+                Entity.CharacterMap map = new Entity.CharacterMap(i, name);
 
 
                 int mapCount = input.ReadInt32();
@@ -121,7 +125,7 @@ namespace SaNi.Spriter
             }
         }
 
-        private void LoadMaps(ContentReader input, CharacterMap map, int count)
+        private void LoadMaps(ContentReader input, Entity.CharacterMap map, int count)
         {
             for (int j = 0; j < count; j++)
             {
@@ -138,7 +142,7 @@ namespace SaNi.Spriter
 
         #region Animations
 
-        private void LoadAnimations(ContentReader input, SpriterEntity entity, int animationCount)
+        private void LoadAnimations(ContentReader input, Entity entity, int animationCount)
         {
             for (int i = 0; i < animationCount; i++)
             {
@@ -165,16 +169,16 @@ namespace SaNi.Spriter
             }
         }
 
-        private void LoadTimelines(ContentReader input, SpriterAnimation anim, SpriterEntity entity, int count)
+        private void LoadTimelines(ContentReader input, SpriterAnimation anim, Entity entity, int count)
         {
             for (int id = 0; id < count; id++)
             {
                 string name = input.ReadString();
                 string objtype = input.ReadString();
                 int keyCount = input.ReadInt32();
-                ObjectType type = SpriterUtils.GetObjectInfoFor(objtype);
-                ObjectInfo info = entity.GetInfo(name);
-                if (info == null) info = new ObjectInfo(name, type, Vector2.Zero, new List<FileReference>());
+                Entity.ObjectType type = SpriterUtils.GetObjectInfoFor(objtype);
+                Entity.ObjectInfo info = entity.GetInfo(name);
+                if (info == null) info = new Entity.ObjectInfo(name, type, new Dimension(0f,0f), new List<FileReference>());
                 Timeline timeline = new Timeline(id, name, info, keyCount);
                 anim.AddTimeline(timeline);
                 LoadTimelineKeys(input, timeline, keyCount);
@@ -196,7 +200,7 @@ namespace SaNi.Spriter
                     input.ReadSingle()
                 };
                 Curve curve = new Curve();
-                curve.Type = Curve.GetType(curveType);
+                curve.Type = SpriterUtils.GetType(curveType);
                 curve.Constraints.Set(c[0],c[1], c[2], c[3]);
                 TimelineKey key = new TimelineKey(id, time, spin, curve);
                 LoadObjectOrBone(input, key, timeline);
@@ -206,23 +210,27 @@ namespace SaNi.Spriter
         private void LoadObjectOrBone(ContentReader input, TimelineKey key, Timeline timeline)
         {
             string name = input.ReadString();
-            Vector2 pivot = new Vector2(input.ReadSingle(), input.ReadSingle());
-            Vector2 scale = new Vector2(input.ReadSingle(), input.ReadSingle());
-            Vector2 position = new Vector2(input.ReadSingle(), input.ReadSingle());
+            Point pivot = new Point(input.ReadSingle(), input.ReadSingle());
+            Point scale = new Point(input.ReadSingle(), input.ReadSingle());
+            Point position = new Point(input.ReadSingle(), input.ReadSingle());
             float angle = input.ReadSingle();
             int folder = -1, file = -1;
             float alpha = 1f;
             if (name == "object")
             {
-                if (timeline.ObjectInfo.Type == ObjectType.Sprite)
+                if (timeline.ObjectInfo.Type == Entity.ObjectType.Sprite)
                 {
                     folder = input.ReadInt32();
                     file = input.ReadInt32();
                     alpha = input.ReadSingle();
-                    // TODO laske pivot
-
-
                     
+                    
+                    File f = data.GetFolder(folder).GetFile(file);
+                    // TODO objectilla voi olla kans pivot, pitäs kirjottaa?
+                    pivot = new Point(f.Pivot.X, f.Pivot.Y);
+                    timeline.ObjectInfo.Size.Set(f.Size);
+
+
                 }
             }
             SpriterObject obj;
@@ -254,17 +262,17 @@ namespace SaNi.Spriter
                     input.ReadSingle(),
                 };
                 Curve curve = new Curve();
-                curve.Type = Curve.GetType(curveType);
+                curve.Type = SpriterUtils.GetType(curveType);
                 curve.Constraints.Set(cs[0], cs[1], cs[2], cs[3]);
 
-                Key key = new Key(id, time, curve, boneRefCount, objectRefCount);
+                Mainline.Key key = new Mainline.Key(id, time, curve, boneRefCount, objectRefCount);
                 mainline.AddKey(key);
                 LoadRefs(input, objectRefCount, boneRefCount, key);
             }
 
         }
 
-        private void LoadRefs(ContentReader input, int objectRefCount, int boneRefCount, Key _key)
+        private void LoadRefs(ContentReader input, int objectRefCount, int boneRefCount, Mainline.Key _key)
         {
             for (int id = 0; id < boneRefCount; id++)
             {
@@ -272,7 +280,7 @@ namespace SaNi.Spriter
                 int timeline = input.ReadInt32();
                 int key = input.ReadInt32();
                 
-                BoneRef boneRef = new BoneRef(id, timeline, key, _key.GetBoneRef(parent));
+                Mainline.Key.BoneRef boneRef = new Mainline.Key.BoneRef(id, timeline, key, _key.GetBoneRef(parent));
                 _key.AddBoneRef(boneRef);
             }
 
@@ -282,7 +290,7 @@ namespace SaNi.Spriter
                 int timeline = input.ReadInt32();
                 int key = input.ReadInt32();
                 int z = input.ReadInt32();
-                ObjectRef objref = new ObjectRef(id, timeline, key, _key.GetBoneRef(parent), z);
+                Mainline.Key.ObjectRef objref = new Mainline.Key.ObjectRef(id, timeline, key, _key.GetBoneRef(parent), z);
                 _key.AddObjectRef(objref);
             }
 
