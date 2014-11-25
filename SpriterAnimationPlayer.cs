@@ -42,26 +42,26 @@ namespace SaNi.Spriter
 
         public readonly IList<Attachment> Attachments = new List<Attachment>();
 		internal Bone Root = new Bone(new Point(0,0));
-		private readonly Point Position_Renamed = new Point(0,0), Pivot_Renamed = new Point(0,0);
-		private readonly Dictionary<Object, Timeline.Key> ObjToTimeline = new Dictionary<Object, Timeline.Key>();
-		private float Angle_Renamed;
-		private bool Dirty = true;
+		private readonly Point position = new Point(0,0), pivot = new Point(0,0);
+		private readonly Dictionary<Object, Timeline.Key> objToTimeline = new Dictionary<Object, Timeline.Key>();
+		private float angle;
+		private bool dirty = true;
 		public Entity.CharacterMap[] CharacterMaps;
-		private Rectangle Rect;
+		private readonly Rectangle rect;
 		public readonly Box PrevBBox;
-		private BoneIterator BoneIterator_Renamed;
-		private ObjectIterator ObjectIterator_Renamed;
-		private Mainline.Key CurrentKey_Renamed, PrevKey;
-		public bool CopyObjects_Renamed = true;
+		private readonly BoneIterator boneIterator;
+		private readonly ObjectIterator objectIterator;
+		private Mainline.Key currentKey, prevKey;
+		public bool copyObjects = true;
 		/// <summary>
 		/// Creates a <seealso cref="SpriterAnimationPlayer"/> instance with the given entity. </summary>
 		/// <param name="entity"> the entity this player will animate </param>
 		public SpriterAnimationPlayer(Entity entity)
 		{
-			this.BoneIterator_Renamed = new BoneIterator(this);
-			this.ObjectIterator_Renamed = new ObjectIterator(this);
+			this.boneIterator = new BoneIterator(this);
+			this.objectIterator = new ObjectIterator(this);
 			this.Speed = 15;
-			this.Rect = new Rectangle(0,0,0,0);
+			this.rect = new Rectangle(0,0,0,0);
 			this.PrevBBox = new Box();
 			
 			SetEntity(entity);
@@ -77,21 +77,21 @@ namespace SaNi.Spriter
 		    {
 		        OnPreProcess(this);
 		    }
-			if (Dirty)
+			if (dirty)
 			{
 				this.UpdateRoot();
 			}
 			this.Animation.Update(Time, Root);
-			this.CurrentKey_Renamed = this.Animation.CurrentKey;
-			if (PrevKey != CurrentKey_Renamed)
+			this.currentKey = this.Animation.CurrentKey;
+			if (prevKey != currentKey)
 			{
 			    if (OnMainlineKeyChanged != null)
 			    {
-			        OnMainlineKeyChanged(PrevKey, CurrentKey_Renamed);
+			        OnMainlineKeyChanged(prevKey, currentKey);
 			    }
-				PrevKey = CurrentKey_Renamed;
+				prevKey = currentKey;
 			}
-			if (CopyObjects_Renamed)
+			if (copyObjects)
 			{
 				TweenedKeys = tempTweenedKeys;
 				UnmappedTweenedKeys = tempUnmappedTweenedKeys;
@@ -149,11 +149,11 @@ namespace SaNi.Spriter
 
 		private void UpdateRoot()
 		{
-			this.Root.Angle = Angle_Renamed;
-			this.Root.Position.Set(Pivot_Renamed);
-			this.Root.Position.Rotate(Angle_Renamed);
-			this.Root.Position.Translate(Position_Renamed);
-			Dirty = false;
+			this.Root.Angle = angle;
+			this.Root.Position.Set(pivot);
+			this.Root.Position.Rotate(angle);
+			this.Root.Position.Translate(position);
+			dirty = false;
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no reference for the given bone was found </exception>
 		public virtual Mainline.Key.BoneRef GetBoneRef(Bone bone)
 		{
-			return this.CurrentKey.GetBoneRefTimeline(this.ObjToTimeline[bone as Object].Id);
+			return this.CurrentKey.GetBoneRefTimeline(this.objToTimeline[bone as Object].Id);
 		}
 
 		/// <summary>
@@ -245,7 +245,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no reference for the given object was found </exception>
 		public virtual Mainline.Key.ObjectRef GetObjectRef(Object @object)
 		{
-			return this.CurrentKey.GetObjectRefTimeline(this.ObjToTimeline[@object].Id);
+			return this.CurrentKey.GetObjectRefTimeline(this.objToTimeline[@object].Id);
 		}
 
 		/// <summary>
@@ -255,7 +255,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no name for the given bone or bject was found </exception>
 		public virtual string GetNameFor(Bone boneOrObject)
 		{
-			return this.Animation.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).Name;
+			return this.Animation.GetTimeline(objToTimeline[boneOrObject as Object].Id).Name;
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no object info for the given bone or bject was found </exception>
 		public virtual Entity.ObjectInfo GetObjectInfoFor(Bone boneOrObject)
 		{
-			return this.Animation.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).ObjectInfo;
+			return this.Animation.GetTimeline(objToTimeline[boneOrObject as Object].Id).ObjectInfo;
 		}
 
 		/// <summary>
@@ -274,7 +274,7 @@ namespace SaNi.Spriter
 		/// <returns> the time line key of the bone or object, or null if no time line key was found </returns>
 		public virtual Timeline.Key GetKeyFor(Bone boneOrObject)
 		{
-			return ObjToTimeline[boneOrObject as Object];
+			return objToTimeline[boneOrObject as Object];
 		}
 
 		/// <summary>
@@ -619,7 +619,7 @@ namespace SaNi.Spriter
 	            keyU.Object = new Object(new Point(0, 0));
 	            TweenedKeys[i] = key;
 	            UnmappedTweenedKeys[i] = keyU;
-	            this.ObjToTimeline[keyU.Object] = keyU;
+	            this.objToTimeline[keyU.Object] = keyU;
 	        }
 	        this.tempTweenedKeys = TweenedKeys;
 	        this.tempUnmappedTweenedKeys = UnmappedTweenedKeys;
@@ -690,10 +690,10 @@ namespace SaNi.Spriter
 		public virtual Rectangle GetBoundingRectangle(Mainline.Key.BoneRef root)
 		{
 			Bone boneRoot = root == null ? this.Root : this.UnmappedTweenedKeys[root.Timeline].Object;
-			this.Rect.Set(boneRoot.Position.X, boneRoot.Position.Y, boneRoot.Position.X, boneRoot.Position.Y);
+			this.rect.Set(boneRoot.Position.X, boneRoot.Position.Y, boneRoot.Position.X, boneRoot.Position.Y);
 			this.CalcBoundingRectangle(root);
-			this.Rect.CalculateSize();
-			return this.Rect;
+			this.rect.CalculateSize();
+			return this.rect;
 		}
 
 		/// <summary>
@@ -716,7 +716,7 @@ namespace SaNi.Spriter
 				}
 				Bone bone = this.UnmappedTweenedKeys[@ref.Timeline].Object;
 				this.PrevBBox.CalcFor(bone, Animation.GetTimeline(@ref.Timeline).ObjectInfo);
-				Rectangle.SetBiggerRectangle(Rect, this.PrevBBox.BoundingRect, Rect);
+				Rectangle.SetBiggerRectangle(rect, this.PrevBBox.BoundingRect, rect);
 				this.CalcBoundingRectangle(@ref);
 			}
 			foreach (Mainline.Key.ObjectRef @ref in CurrentKey.ObjectRefs)
@@ -727,7 +727,7 @@ namespace SaNi.Spriter
 				}
 				Bone bone = this.UnmappedTweenedKeys[@ref.Timeline].Object;
 				this.PrevBBox.CalcFor(bone, Animation.GetTimeline(@ref.Timeline).ObjectInfo);
-				Rectangle.SetBiggerRectangle(Rect, this.PrevBBox.BoundingRect, Rect);
+				Rectangle.SetBiggerRectangle(rect, this.PrevBBox.BoundingRect, rect);
 			}
 		}
 
@@ -738,7 +738,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return this.CurrentKey_Renamed;
+				return this.currentKey;
 			}
 		}
 
@@ -848,8 +848,8 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer SetPosition(float x, float y)
 		{
-			this.Dirty = true;
-			this.Position_Renamed.Set(x,y);
+			this.dirty = true;
+			this.position.Set(x,y);
 			return this;
 		}
 
@@ -869,7 +869,7 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer TranslatePosition(float x, float y)
 		{
-			return this.SetPosition(Position_Renamed.X + x, Position_Renamed.Y + y);
+			return this.SetPosition(position.X + x, position.Y + y);
 		}
 
 		/// <summary>
@@ -888,7 +888,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return Position_Renamed.X;
+				return position.X;
 			}
 		}
 
@@ -899,7 +899,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return Position_Renamed.Y;
+				return position.Y;
 			}
 		}
 
@@ -909,8 +909,8 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer SetAngle(float angle)
 		{
-			this.Dirty = true;
-			this.Angle_Renamed = angle;
+			this.dirty = true;
+			this.angle = angle;
 			return this;
 		}
 
@@ -920,7 +920,7 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer Rotate(float angle)
 		{
-			return this.SetAngle(angle + this.Angle_Renamed);
+			return this.SetAngle(angle + this.angle);
 		}
 
 		/// <summary>
@@ -930,7 +930,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return this.Angle_Renamed;
+				return this.angle;
 			}
 		}
 
@@ -942,8 +942,8 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer SetPivot(float x, float y)
 		{
-			this.Dirty = true;
-			this.Pivot_Renamed.Set(x, y);
+			this.dirty = true;
+			this.pivot.Set(x, y);
 			return this;
 		}
 
@@ -964,7 +964,7 @@ namespace SaNi.Spriter
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer TranslatePivot(float x, float y)
 		{
-			return this.SetPivot(Pivot_Renamed.X + x, Pivot_Renamed.Y + y);
+			return this.SetPivot(pivot.X + x, pivot.Y + y);
 		}
 
 		/// <summary>
@@ -983,7 +983,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return Pivot_Renamed.X;
+				return pivot.X;
 			}
 		}
 
@@ -994,7 +994,7 @@ namespace SaNi.Spriter
 		{
 			get
 			{
-				return Pivot_Renamed.Y;
+				return pivot.Y;
 			}
 		}
 
@@ -1012,8 +1012,8 @@ namespace SaNi.Spriter
 		/// <returns> the bone iterator </returns>
 		public virtual IEnumerator<Bone> BoneIterator(Mainline.Key.BoneRef start)
 		{
-			this.BoneIterator_Renamed.Index = start.Id;
-			return this.BoneIterator_Renamed;
+			this.boneIterator.Index = start.Id;
+			return this.boneIterator;
 		}
 
 		/// <summary>
@@ -1030,8 +1030,8 @@ namespace SaNi.Spriter
 		/// <returns> the object iterator </returns>
 		public virtual IEnumerator<Object> ObjectIterator(Mainline.Key.ObjectRef start)
 		{
-			this.ObjectIterator_Renamed.Index = start.Id;
-			return this.ObjectIterator_Renamed;
+			this.objectIterator.Index = start.Id;
+			return this.objectIterator;
 		}
 
 		/// <summary>
