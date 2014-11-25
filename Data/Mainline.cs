@@ -15,7 +15,7 @@ namespace SaNi.Spriter.Data
 	{
 
 		internal readonly Key[] Keys;
-		private int KeyPointer = 0;
+		private int keyPointer = 0;
 
 		public Mainline(int keys)
 		{
@@ -35,7 +35,7 @@ namespace SaNi.Spriter.Data
 
 		public virtual void AddKey(Key key)
 		{
-			this.Keys[KeyPointer++] = key;
+			this.Keys[keyPointer++] = key;
 		}
 
 		/// <summary>

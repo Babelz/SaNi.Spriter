@@ -12,7 +12,7 @@ namespace SaNi.Spriter.Data
 	{
 
 		public readonly Key[] Keys;
-		private int KeyPointer = 0;
+		private int keyPointer = 0;
 		public readonly int Id;
 		public readonly string Name;
 		public readonly Entity.ObjectInfo ObjectInfo;
@@ -27,7 +27,7 @@ namespace SaNi.Spriter.Data
 
 		internal virtual void AddKey(Key key)
 		{
-			this.Keys[KeyPointer++] = key;
+			this.Keys[keyPointer++] = key;
 		}
 
 		/// <summary>

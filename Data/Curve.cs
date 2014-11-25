@@ -56,7 +56,7 @@
 	    }
 
 
-		private float LastCubicSolution = 0f;
+		private float lastCubicSolution = 0f;
 		/// <summary>
 		/// Returns a new value based on the given values.
 		/// Tweens the weight with the set sub curve. </summary>
@@ -85,11 +85,11 @@
                 float? cubicSolution = Calculator.SolveCubic(3f * (Constraints.C1 - Constraints.C3) + 1f, 3f * (Constraints.C3 - 2f * Constraints.C1), 3f * Constraints.C1, -t);
 						 if (cubicSolution == null)
 						 {
-							 cubicSolution = LastCubicSolution;
+							 cubicSolution = lastCubicSolution;
 						 }
 						 else
 						 {
-							 LastCubicSolution = cubicSolution.Value;
+							 lastCubicSolution = cubicSolution.Value;
 						 }
                          return Interpolator.Linear(a, b, Interpolator.Bezier(cubicSolution.Value, 0f, Constraints.C2, Constraints.C4, 1f));
 			default:
@@ -173,11 +173,11 @@
 				float? cubicSolution = Calculator.SolveCubic(3f * (Constraints.C1 - Constraints.C3) + 1f, 3f * (Constraints.C3 - 2f * Constraints.C1), 3f * Constraints.C1, -t);
 						 if (cubicSolution == null)
 						 {
-							 cubicSolution = LastCubicSolution;
+							 cubicSolution = lastCubicSolution;
 						 }
 						 else
 						 {
-							 LastCubicSolution = cubicSolution.Value;
+							 lastCubicSolution = cubicSolution.Value;
 						 }
                          return Interpolator.LinearAngle(a, b, Interpolator.Bezier(cubicSolution.Value, 0f, Constraints.C2, Constraints.C4, 1f));
 			default:
@@ -207,7 +207,7 @@
             this.Set(c1, c2, c3, c4);
         }
 
-        public virtual void Set(float c1, float c2, float c3, float c4)
+        public void Set(float c1, float c2, float c3, float c4)
         {
             this.C1 = c1;
             this.C2 = c2;

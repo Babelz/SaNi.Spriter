@@ -7,16 +7,40 @@ using SaNi.Spriter.Data;
 namespace SaNi.Spriter
 {
     using Object = SpriterObject;
+    public delegate void AnimationFinishedEventHandler(SpriterAnimation animation);
+    public delegate void AnimationChangedEventHandler(SpriterAnimation old, SpriterAnimation newAnim);
+    public delegate void PlayerProcessEventHandler(SpriterAnimationPlayer player);
+    public delegate void MainlineKeyChangedEventHandler(Mainline.Key previous, Mainline.Key newKey);
+    
 	public class SpriterAnimationPlayer
 	{
-		protected internal Entity Entity_Renamed;
-		internal SpriterAnimation SpriterAnimationRenamed;
-		internal int Time_Renamed;
+		protected internal Entity Entity;
+		internal SpriterAnimation Animation;
+		internal int Time;
 		public int Speed;
 		internal Timeline.Key[] TweenedKeys, UnmappedTweenedKeys;
-		private Timeline.Key[] TempTweenedKeys, TempUnmappedTweenedKeys;
-		private IList<PlayerListener> Listeners;
-		public readonly IList<Attachment> Attachments = new List<Attachment>();
+		private Timeline.Key[] tempTweenedKeys, tempUnmappedTweenedKeys;
+
+        #region Events
+
+         public event AnimationFinishedEventHandler OnAnimationFinished;
+         public event AnimationChangedEventHandler OnAnimationChanged;
+         /// <summary>
+         /// Kutsutaan ennen kuin päivitetään animaatiota
+         /// </summary>
+         public event PlayerProcessEventHandler OnPreProcess;
+         /// <summary>
+         /// Kutsutaan animaation päivittämisen jälkeen
+         /// </summary>
+         public event PlayerProcessEventHandler OnPostProcess;
+         /// <summary>
+         /// Kun mainlinekey vaihtuu
+         /// </summary>
+         public event MainlineKeyChangedEventHandler OnMainlineKeyChanged;
+
+        #endregion
+
+        public readonly IList<Attachment> Attachments = new List<Attachment>();
 		internal Bone Root = new Bone(new Point(0,0));
 		private readonly Point Position_Renamed = new Point(0,0), Pivot_Renamed = new Point(0,0);
 		private readonly Dictionary<Object, Timeline.Key> ObjToTimeline = new Dictionary<Object, Timeline.Key>();
@@ -39,7 +63,7 @@ namespace SaNi.Spriter
 			this.Speed = 15;
 			this.Rect = new Rectangle(0,0,0,0);
 			this.PrevBBox = new Box();
-			this.Listeners = new List<PlayerListener>();
+			
 			SetEntity(entity);
 		}
 
@@ -49,34 +73,34 @@ namespace SaNi.Spriter
 		/// </summary>
 		public virtual void Update()
 		{
-			foreach (PlayerListener listener in Listeners)
-			{
-				listener.PreProcess(this);
-			}
+		    if (OnPreProcess != null)
+		    {
+		        OnPreProcess(this);
+		    }
 			if (Dirty)
 			{
 				this.UpdateRoot();
 			}
-			this.SpriterAnimationRenamed.Update(Time_Renamed, Root);
-			this.CurrentKey_Renamed = this.SpriterAnimationRenamed.CurrentKey;
+			this.Animation.Update(Time, Root);
+			this.CurrentKey_Renamed = this.Animation.CurrentKey;
 			if (PrevKey != CurrentKey_Renamed)
 			{
-				foreach (PlayerListener listener in Listeners)
-				{
-					listener.MainlineKeyChanged(PrevKey, CurrentKey_Renamed);
-				}
+			    if (OnMainlineKeyChanged != null)
+			    {
+			        OnMainlineKeyChanged(PrevKey, CurrentKey_Renamed);
+			    }
 				PrevKey = CurrentKey_Renamed;
 			}
 			if (CopyObjects_Renamed)
 			{
-				TweenedKeys = TempTweenedKeys;
-				UnmappedTweenedKeys = TempUnmappedTweenedKeys;
+				TweenedKeys = tempTweenedKeys;
+				UnmappedTweenedKeys = tempUnmappedTweenedKeys;
 				this.CopyObjects();
 			}
 			else
 			{
-				TweenedKeys = SpriterAnimationRenamed.TweenedKeys;
-				UnmappedTweenedKeys = SpriterAnimationRenamed.UnmappedTweenedKeys;
+				TweenedKeys = Animation.TweenedKeys;
+				UnmappedTweenedKeys = Animation.UnmappedTweenedKeys;
 			}
 
 			foreach (Attachment attach in Attachments)
@@ -84,42 +108,42 @@ namespace SaNi.Spriter
 				attach.Update();
 			}
 
-			foreach (PlayerListener listener in Listeners)
-			{
-				listener.PostProcess(this);
-			}
+		    if (OnPostProcess != null)
+		    {
+		        OnPostProcess(this);
+		    }
 			this.IncreaseTime();
 		}
 
 		private void CopyObjects()
 		{
-			for (int i = 0; i < SpriterAnimationRenamed.TweenedKeys.Length; i++)
+			for (int i = 0; i < Animation.TweenedKeys.Length; i++)
 			{
-				this.TweenedKeys[i].Active = SpriterAnimationRenamed.TweenedKeys[i].Active;
-				this.UnmappedTweenedKeys[i].Active = SpriterAnimationRenamed.UnmappedTweenedKeys[i].Active;
-				this.TweenedKeys[i].Object.Set(SpriterAnimationRenamed.TweenedKeys[i].Object);
-				this.UnmappedTweenedKeys[i].Object.Set(SpriterAnimationRenamed.UnmappedTweenedKeys[i].Object);
+				this.TweenedKeys[i].Active = Animation.TweenedKeys[i].Active;
+				this.UnmappedTweenedKeys[i].Active = Animation.UnmappedTweenedKeys[i].Active;
+				this.TweenedKeys[i].Object.Set(Animation.TweenedKeys[i].Object);
+				this.UnmappedTweenedKeys[i].Object.Set(Animation.UnmappedTweenedKeys[i].Object);
 			}
 		}
 
 		private void IncreaseTime()
 		{
-			Time_Renamed += Speed;
-			if (Time_Renamed > SpriterAnimationRenamed.Length)
+			Time += Speed;
+			if (Time > Animation.Length)
 			{
-				Time_Renamed = Time_Renamed - SpriterAnimationRenamed.Length;
-				foreach (PlayerListener listener in Listeners)
-				{
-					listener.AnimationFinished(SpriterAnimationRenamed);
-				}
+				Time = Time - Animation.Length;
+			    if (OnAnimationFinished != null)
+			    {
+			        OnAnimationFinished(Animation);
+			    }
 			}
-			if (Time_Renamed < 0)
+			if (Time < 0)
 			{
-				foreach (PlayerListener listener in Listeners)
-				{
-					listener.AnimationFinished(SpriterAnimationRenamed);
-				}
-				Time_Renamed += SpriterAnimationRenamed.Length;
+                if (OnAnimationFinished != null)
+                {
+                    OnAnimationFinished(Animation);
+                }
+				Time += Animation.Length;
 			}
 		}
 
@@ -158,7 +182,7 @@ namespace SaNi.Spriter
 		{
 			foreach (Mainline.Key.BoneRef @ref in CurrentKey.BoneRefs)
 			{
-				if (SpriterAnimationRenamed.GetTimeline(@ref.Timeline).Name.Equals(name))
+				if (Animation.GetTimeline(@ref.Timeline).Name.Equals(name))
 				{
 					return @ref.Id;
 				}
@@ -174,7 +198,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no bone exists with the given name </exception>
 		public virtual Bone GetBone(string name)
 		{
-		    return this.UnmappedTweenedKeys[SpriterAnimationRenamed.GetTimeline(name).Id].Object;
+		    return this.UnmappedTweenedKeys[Animation.GetTimeline(name).Id].Object;
 		}
 
 		/// <summary>
@@ -195,7 +219,7 @@ namespace SaNi.Spriter
 		{
 			foreach (Mainline.Key.ObjectRef @ref in CurrentKey.ObjectRefs)
 			{
-				if (SpriterAnimationRenamed.GetTimeline(@ref.Timeline).Name.Equals(name))
+				if (Animation.GetTimeline(@ref.Timeline).Name.Equals(name))
 				{
 					return @ref.Id;
 				}
@@ -211,7 +235,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no object exists with the given name </exception>
 		public virtual Object GetObject(string name)
 		{
-			return UnmappedTweenedKeys[SpriterAnimationRenamed.GetTimeline(name).Id].Object;
+			return UnmappedTweenedKeys[Animation.GetTimeline(name).Id].Object;
 		}
 
 		/// <summary>
@@ -231,7 +255,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no name for the given bone or bject was found </exception>
 		public virtual string GetNameFor(Bone boneOrObject)
 		{
-			return this.SpriterAnimationRenamed.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).Name;
+			return this.Animation.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).Name;
 		}
 
 		/// <summary>
@@ -241,7 +265,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no object info for the given bone or bject was found </exception>
 		public virtual Entity.ObjectInfo GetObjectInfoFor(Bone boneOrObject)
 		{
-			return this.SpriterAnimationRenamed.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).ObjectInfo;
+			return this.Animation.GetTimeline(ObjToTimeline[boneOrObject as Object].Id).ObjectInfo;
 		}
 
 		/// <summary>
@@ -583,7 +607,7 @@ namespace SaNi.Spriter
 	        {
 	            throw new SpriterException("entity can not be null!");
 	        }
-	        this.Entity_Renamed = value;
+	        this.Entity = value;
 	        int maxAnims = value.SpriterAnimationWithMostTimelines.Timelines();
 	        TweenedKeys = new Timeline.Key[maxAnims];
 	        UnmappedTweenedKeys = new Timeline.Key[maxAnims];
@@ -597,9 +621,9 @@ namespace SaNi.Spriter
 	            UnmappedTweenedKeys[i] = keyU;
 	            this.ObjToTimeline[keyU.Object] = keyU;
 	        }
-	        this.TempTweenedKeys = TweenedKeys;
-	        this.TempUnmappedTweenedKeys = UnmappedTweenedKeys;
-	        this.SpriterAnimationRenamed = value.GetAnimation(0);
+	        this.tempTweenedKeys = TweenedKeys;
+	        this.tempUnmappedTweenedKeys = UnmappedTweenedKeys;
+	        this.Animation = value.GetAnimation(0);
 
 	    }
 
@@ -610,8 +634,8 @@ namespace SaNi.Spriter
 	    public void SetAnimation(SpriterAnimation value)
 	    {
 
-	        SpriterAnimation prevAnim = this.SpriterAnimationRenamed;
-	        if (value == this.SpriterAnimationRenamed)
+	        SpriterAnimation prevAnim = this.Animation;
+	        if (value == this.Animation)
 	        {
 	            return;
 	        }
@@ -619,22 +643,22 @@ namespace SaNi.Spriter
 	        {
 	            throw new SpriterException("animation can not be null!");
 	        }
-	        if (!this.Entity_Renamed.ContainsAnimation(value) && value.Id != -1)
+	        if (!this.Entity.ContainsAnimation(value) && value.Id != -1)
 	        {
 	            throw new SpriterException("animation has to be in the same entity as the current set one!");
 	        }
-	        if (value != this.SpriterAnimationRenamed)
+	        if (value != this.Animation)
 	        {
-	            Time_Renamed = 0;
+	            Time = 0;
 	        }
-	        this.SpriterAnimationRenamed = value;
-	        int tempTime = this.Time_Renamed;
-	        this.Time_Renamed = 0;
+	        this.Animation = value;
+	        int tempTime = this.Time;
+	        this.Time = 0;
 	        this.Update();
-	        this.Time_Renamed = tempTime;
-	        foreach (PlayerListener listener in Listeners)
+	        this.Time = tempTime;
+	        if (OnAnimationChanged != null)
 	        {
-	            listener.AnimationChanged(prevAnim, value);
+	           OnAnimationChanged(prevAnim, value);
 	        }
 
 	    }
@@ -645,7 +669,7 @@ namespace SaNi.Spriter
 		/// <exception cref="SpriterException"> if no animation exists with the given name </exception>
 		public void SetAnimation(string name)
 		{
-				this.SpriterAnimationRenamed = Entity_Renamed.GetAnimation(name);
+				this.Animation = Entity.GetAnimation(name);
 		}
 
 		/// <summary>
@@ -654,7 +678,7 @@ namespace SaNi.Spriter
 		/// <exception cref="IndexOutOfBoundsException"> if the index is out of range </exception>
 		public void SetAnimation(int value)
 		{
-            this.SpriterAnimationRenamed = Entity_Renamed.GetAnimation(value);
+            this.Animation = Entity.GetAnimation(value);
 		}
 
 
@@ -691,7 +715,7 @@ namespace SaNi.Spriter
 					continue;
 				}
 				Bone bone = this.UnmappedTweenedKeys[@ref.Timeline].Object;
-				this.PrevBBox.CalcFor(bone, SpriterAnimationRenamed.GetTimeline(@ref.Timeline).ObjectInfo);
+				this.PrevBBox.CalcFor(bone, Animation.GetTimeline(@ref.Timeline).ObjectInfo);
 				Rectangle.SetBiggerRectangle(Rect, this.PrevBBox.BoundingRect, Rect);
 				this.CalcBoundingRectangle(@ref);
 			}
@@ -702,7 +726,7 @@ namespace SaNi.Spriter
 					continue;
 				}
 				Bone bone = this.UnmappedTweenedKeys[@ref.Timeline].Object;
-				this.PrevBBox.CalcFor(bone, SpriterAnimationRenamed.GetTimeline(@ref.Timeline).ObjectInfo);
+				this.PrevBBox.CalcFor(bone, Animation.GetTimeline(@ref.Timeline).ObjectInfo);
 				Rectangle.SetBiggerRectangle(Rect, this.PrevBBox.BoundingRect, Rect);
 			}
 		}
@@ -719,25 +743,13 @@ namespace SaNi.Spriter
 		}
 
 		/// <summary>
-		/// Returns the current time.
-		/// The player will make sure that the current time is always between 0 and <seealso cref="SpriterAnimation#length"/>. </summary>
-		/// <returns> the current time </returns>
-		public virtual int Time
-		{
-			get
-			{
-				return Time_Renamed;
-			}
-		}
-
-		/// <summary>
 		/// Sets the time for the current time.
 		/// The player will make sure that the new time will not exceed the time bounds of the current animation. </summary>
 		/// <param name="time"> the new time </param>
 		/// <returns> this player to enable chained operations </returns>
 		public virtual SpriterAnimationPlayer SetTime(int time)
 		{
-			this.Time_Renamed = time;
+			Time = time;
 			int prevSpeed = this.Speed;
 			this.Speed = 0;
 			this.IncreaseTime();
@@ -987,22 +999,6 @@ namespace SaNi.Spriter
 		}
 
 		/// <summary>
-		/// Appends a listener to the listeners list of this player. </summary>
-		/// <param name="listener"> the listener to add </param>
-		public virtual void AddListener(PlayerListener listener)
-		{
-			this.Listeners.Add(listener);
-		}
-
-		/// <summary>
-		/// Removes a listener from  the listeners list of this player. </summary>
-		/// <param name="listener"> the listener to remove </param>
-		public virtual void RemoveListener(PlayerListener listener)
-		{
-			this.Listeners.Remove(listener);
-		}
-
-		/// <summary>
 		/// Returns an iterator to iterate over all time line bones in the current animation. </summary>
 		/// <returns> the bone iterator </returns>
 		public virtual IEnumerator<Bone> BoneIterator()
@@ -1036,26 +1032,6 @@ namespace SaNi.Spriter
 		{
 			this.ObjectIterator_Renamed.Index = start.Id;
 			return this.ObjectIterator_Renamed;
-		}
-
-        
-
-		/// <summary>
-		/// A listener to listen for specific events which can occur during the runtime of a <seealso cref="SpriterAnimationPlayer"/> instance.
-		/// @author Trixt0r
-		/// 
-		/// </summary>
-		public interface PlayerListener
-		{
-			void AnimationFinished(SpriterAnimation spriterAnimation);
-
-			void AnimationChanged(SpriterAnimation oldAnim, SpriterAnimation newAnim);
-
-			void PreProcess(SpriterAnimationPlayer SpriterAnimationPlayer);
-
-			void PostProcess(SpriterAnimationPlayer SpriterAnimationPlayer);
-
-			void MainlineKeyChanged(Mainline.Key prevKey, Mainline.Key newKey);
 		}
 
 		/// <summary>

@@ -12,7 +12,7 @@ namespace SaNi.Spriter.Data
 	public class Box
 	{
 		public readonly Point[] Points;
-		private Rectangle Rect;
+		private readonly Rectangle rect;
 
 		/// <summary>
 		/// Creates a new box with no witdh and height.
@@ -26,7 +26,7 @@ namespace SaNi.Spriter.Data
 				this.Points[i] = new Point(0,0);
 				//this.Temp[i] = new Point(0,0);
 			}
-			this.Rect = new Rectangle(0,0,0,0);
+			this.rect = new Rectangle(0,0,0,0);
 		}
 
 	    /// <summary>
@@ -100,12 +100,12 @@ namespace SaNi.Spriter.Data
 		{
 			get
 			{
-				this.Rect.Set(Points[0].X,Points[0].Y,Points[0].X,Points[0].Y);
-				this.Rect.Left = Math.Min(Math.Min(Math.Min(Math.Min(Points[0].X, Points[1].X),Points[2].X),Points[3].X), this.Rect.Left);
-				this.Rect.Right = Math.Max(Math.Max(Math.Max(Math.Max(Points[0].X, Points[1].X),Points[2].X),Points[3].X), this.Rect.Right);
-				this.Rect.Top = Math.Max(Math.Max(Math.Max(Math.Max(Points[0].Y, Points[1].Y),Points[2].Y),Points[3].Y), this.Rect.Top);
-				this.Rect.Bottom = Math.Min(Math.Min(Math.Min(Math.Min(Points[0].Y, Points[1].Y),Points[2].Y),Points[3].Y), this.Rect.Bottom);
-				return this.Rect;
+				this.rect.Set(Points[0].X,Points[0].Y,Points[0].X,Points[0].Y);
+				this.rect.Left = Math.Min(Math.Min(Math.Min(Math.Min(Points[0].X, Points[1].X),Points[2].X),Points[3].X), this.rect.Left);
+				this.rect.Right = Math.Max(Math.Max(Math.Max(Math.Max(Points[0].X, Points[1].X),Points[2].X),Points[3].X), this.rect.Right);
+				this.rect.Top = Math.Max(Math.Max(Math.Max(Math.Max(Points[0].Y, Points[1].Y),Points[2].Y),Points[3].Y), this.rect.Top);
+				this.rect.Bottom = Math.Min(Math.Min(Math.Min(Math.Min(Points[0].Y, Points[1].Y),Points[2].Y),Points[3].Y), this.rect.Bottom);
+				return this.rect;
 			}
 		}
 
