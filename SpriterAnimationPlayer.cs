@@ -669,7 +669,7 @@ namespace SaNi.Spriter
 		/// <exception cref="SpriterException"> if no animation exists with the given name </exception>
 		public void SetAnimation(string name)
 		{
-				this.Animation = Entity.GetAnimation(name);
+				SetAnimation(Entity.GetAnimation(name));
 		}
 
 		/// <summary>
@@ -678,7 +678,7 @@ namespace SaNi.Spriter
 		/// <exception cref="IndexOutOfBoundsException"> if the index is out of range </exception>
 		public void SetAnimation(int value)
 		{
-            this.Animation = Entity.GetAnimation(value);
+            SetAnimation(Entity.GetAnimation(value));
 		}
 
 
