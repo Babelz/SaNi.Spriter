@@ -69,7 +69,7 @@ namespace SaNi.Spriter
 
 		/// <summary>
 		/// Updates this player.
-		/// This means the current time gets increased by <seealso cref="#speed"/> and is applied to the current animation.
+		/// This means the current time gets increased by <seealso cref="Speed"/> and is applied to the current animation.
 		/// </summary>
 		public virtual void Update()
 		{
@@ -599,7 +599,7 @@ namespace SaNi.Spriter
 	    /// <summary>
 	    /// Sets the entity for this player instance.
 	    /// The animation will be switched to the first one of the new entity. </summary>
-	    /// <param name="entity"> the new entity </param>
+	    /// <param name="value"> the new entity </param>
 	    /// <exception cref="SpriterException"> if the entity is <code>null</code> </exception>
 	    public void SetEntity(Entity value)
 	    {

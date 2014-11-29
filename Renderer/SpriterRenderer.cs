@@ -110,10 +110,10 @@ namespace SaNi.Spriter.Renderer
 
         private void Draw(SpriterAnimationPlayer player, Entity.CharacterMap[] characterMaps, SpriteBatch sb)
         {
-            Draw(player.ObjectIterator(), characterMaps, sb);
+            Draw(player, player.ObjectIterator(), characterMaps, sb);
         }
 
-        private void Draw(IEnumerator<SpriterObject> objectIterator, Entity.CharacterMap[] characterMaps, SpriteBatch sb)
+        private void Draw(SpriterAnimationPlayer player, IEnumerator<SpriterObject> objectIterator, Entity.CharacterMap[] characterMaps, SpriteBatch sb)
         {
             while (objectIterator.MoveNext())
             {
@@ -130,12 +130,12 @@ namespace SaNi.Spriter.Renderer
                             }
                         }
                     }
-                    Draw(obj, sb);
+                    Draw(player, obj, sb);
                 }
             }
         }
 
-        public abstract void Draw(SpriterObject obj, SpriteBatch sb);
+        public abstract void Draw(SpriterAnimationPlayer player, SpriterObject obj, SpriteBatch sb);
         public abstract void Line(float pX, float pY, float targetX, float targetY);
         public abstract void SetColor(Color color);
     }
