@@ -15,7 +15,7 @@ namespace SaNi.Spriter
 	public class SpriterAnimationPlayer
 	{
 		protected internal Entity Entity;
-		internal SpriterAnimation Animation;
+	    public SpriterAnimation Animation;
 		internal int Time;
 		public int Speed;
 		internal Timeline.Key[] TweenedKeys, UnmappedTweenedKeys;
