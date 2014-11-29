@@ -126,7 +126,7 @@ namespace SaNi.Spriter.Renderer
                         {
                             if (characterMap != null)
                             {
-                                obj.@ref.Set(characterMap[obj.@ref]);
+                                obj.@ref.Set(characterMap.Get(obj.@ref));
                             }
                         }
                     }
