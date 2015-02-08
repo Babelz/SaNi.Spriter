@@ -14,7 +14,11 @@ namespace SaNi.Spriter
     
 	public class SpriterAnimationPlayer
 	{
-		protected internal Entity Entity;
+	    public Entity Entity
+	    {
+	        get;
+	        private set;
+	    }
 	    public SpriterAnimation Animation;
 		internal int Time;
 		public int Speed;
@@ -255,7 +259,7 @@ namespace SaNi.Spriter
 		/// <exception cref="NullPointerException"> if no name for the given bone or bject was found </exception>
 		public virtual string GetNameFor(Bone boneOrObject)
 		{
-			return this.Animation.GetTimeline(objToTimeline[boneOrObject as Object].Id).Name;
+		    return this.Animation.GetTimeline(objToTimeline[boneOrObject as Object].Id).Name;
 		}
 
 		/// <summary>

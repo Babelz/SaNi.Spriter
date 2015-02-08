@@ -23,7 +23,12 @@ namespace SaNi.Spriter.Loaders
 
             file = Root + file.Replace('/', Path.DirectorySeparatorChar);
 
-            return Game.Content.Load<Texture2D>(file);
+            if (file.StartsWith("\\"))
+            {
+                file = file.Substring(1);
+            }
+
+              return Game.Content.Load<Texture2D>(file);
         }
     }
 }
